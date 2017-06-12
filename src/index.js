@@ -33,10 +33,10 @@ app.use('/', express.static('public'));
 
 // view engine setup
 app.set('view engine', 'pug');
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/../views');
 
 // router
-var routes = require('./routes/index');
+var routes = require('../routes/index');
 app.use('/', routes);
 
 // catch 404 and forward to global error handler
