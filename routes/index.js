@@ -2,62 +2,138 @@
 const express = require('express');
 const router = express.Router();
 
+var User = require('../models/user').User;
+var Review = require('../models/review').Review;
+var Course = require('../models/course').Course;
+
+
 // index
 router.get('/', (req, res, next)=> {
-   return res.send('Hello there');
+    return res.send('Hello there');
 });
+
+// Middleware
+
+// preload the document in all cases wher
+//router.param('id', function (req, res, next, id) {
+//   Course.findById(id, function (err, course) {
+//      if (err) return next(err);
+//      if(!course){
+//         var err = new Error('Not Found');
+//         err.status(404);
+//         return next(err);
+//      }
+//      req.course = course;
+//      return next();
+//   });
+//});
 
 // API routes
 
 // GET /api/users - get users
 router.get('/api/users', (req, res, next)=> {
-   res.json({
-      message: 'Users'
-   })
+    User.find({})
+        .sort({fullName: 1})
+        .exec(function(err, users){
+            if (err) return next(err);
+            return res.json(users);
+        })
 });
 
 // POST /api/users - create user
 router.post('/api/users', (req, res, next)=> {
-   res.json({
-      message: req.body
-   })
-})
+    var user = new User(req.body);
+    user.save(function (err) {
+        if (err) {
+            //err.status = 400;
+            return next(err);
+        }
+        // indicate to the client that the doc saved successfully
+        res.setHeader('Location', '/');
+        res.status(201);
+        res.json({});
+    })
+});
 
 // GET /api/courses - get courses
 router.get('/api/courses', (req, res, next)=> {
-   res.json({
-      message: 'Courses'
-   })
+    Course.find({})
+        .select('_id title')
+        .sort({title: 1})
+        .exec(function(err, courses){
+            if (err) return next(err);
+            return res.json(courses);
+        })
 });
 
 
 // GET /api/course/:id - get single course
 router.get('/api/courses/:id', (req, res, next)=> {
-   res.json({
-      message: req.params.id
-   })
+    Course.findById(req.params.id)
+        .populate('user', 'fullName')
+        .populate('reviews')
+        .exec(function (err, course) {
+            if (err) return next(err);
+            if(!course){
+                var noCourseErr = new Error('Not Found');
+                noCourseErr.status(404);
+                return next(noCourseErr);
+            }
+            res.status(200).json(course);
+        });
 });
 
 // POST /api/courses - create course
 router.post('/api/courses', (req, res, next)=> {
-   res.json({
-      message: req.body
-   })
+    var course = new Course(req.body);
+    course.save(function (err) {
+        if (err) {
+            err.status = 400;
+            return next(err);
+        }
+        res.status(201); // indicate to the client that the doc saved successfully
+        res.header('Location', '/');
+        res.json({});
+    })
 });
 
 // PUT /api/courses/:id - create course
 router.put('/api/courses/:id', (req, res, next)=> {
-   res.json({
-      message: req.params.id
-   })
+    Course.findById(req.params.id)
+        .exec(function (err, course) {
+            if (err) return next(err);
+            if(!course) return next(err);
+            course.update(req.body, function (err) {
+                if (err) {
+                    err.status = 400;
+                    return next(err);
+                }
+                res.status(201); // indicate to the client that the doc saved successfully
+                res.header('Location', '/');
+                res.json({});
+            })
+        })
 });
 
 // POST /api/courses/:id/reviews - create reviews
 router.post('/api/courses/:id/reviews', (req, res, next)=> {
-   res.json({
-      message: req.params.id,
-      rating: req.body.rating
-   })
+    Course.findById(req.params.id)
+        .exec(function (err, course) {
+            if (err) return next(err);
+            if(!course) return next(err);
+
+            let review = new Review(req.body);
+            review.save(function (err, review) {
+                if (err) return next(err);
+                course.reviews.push(review);
+                course.save(function (err) {
+                    if (err) return next(err);
+                    res.status(201); // indicate to the client that the doc saved successfully
+                    res.header('Location', '/');
+                    res.json({});
+                })
+            });
+        })
 });
 
 

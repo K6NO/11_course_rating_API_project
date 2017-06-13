@@ -5,8 +5,16 @@ var express = require('express');
 var morgan = require('morgan');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
+var seeder = require('mongoose-seeder'),
+    data = require('./data/data.json');
 
 var app = express();
+
+// Models
+
+var User = require('../models/user');
+var Review = require('../models/review');
+var Course = require('../models/course');
 
 // set our port
 app.set('port', process.env.PORT || 5000);
@@ -19,6 +27,11 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', ()=>{
   console.log('Succesfully connected to MongoDB');
+  seeder.seed(data).then(function(dbData) {
+    console.log('Succesfully loaded dummy data');
+  }).catch(function(err) {
+    console.log('Error: ' + err);
+  });
 });
 
 // morgan gives us http request logging
