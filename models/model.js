@@ -64,21 +64,116 @@ UserSchema.statics.authenticate = function (email, password, callback){
 
 UserSchema.plugin(uniqueValidator);
 
-//UserSchema.pre('save', function (next) {
-//    var user = this;
-//    var isValidEmail = validator.isEmail(user.emailAddress);
-//    if(!isValidEmail) {
-//        let error = new Error('The email you provided is not a valid.');
-//        error.status = 401;
-//        return next(error);
-//    }
-//    next();
-//});
 
-// Model
+
+var ReviewSchema = new mongoose.Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    postedOn: {
+        type: Date,
+        default: Date.now()
+    },
+    rating: {
+        type: Number,
+        require: true,
+        min: [1, 'Rate course from 1 to 5'],
+        max: [5, 'Rate course from 1 to 5']
+    },
+    review: {
+        type: String
+    }
+});
+
+// Validator not allowing users to rate own courses
+ReviewSchema.pre('save', function (next) {
+    console.log('Review: ' + this);
+
+    //this.parent()
+    //    .select('user reviews')
+    //    .exec( function (err, course) {
+    //        console.log(course);
+    //        if (err) next(err);
+    //        if (course) {
+    //            if (review.user.toString() === course.user.toString()) {
+    //                let err = new Error("Can not review own course");
+    //                err.status = 503;
+    //                return next(err);
+    //            } else {
+    //                next();
+    //            }
+    //        } else {
+    //            next();
+    //        }
+    //    })
+    next();
+});
+
+
+
+
+var CourseSchema = new mongoose.Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    title: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    description: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    estimatedTime: {
+        type: String
+    },
+    materialsNeeded: {
+        type: String
+    },
+    steps: [
+        {
+            stepNumber: Number
+        },
+        {
+            title: {
+                type: String,
+                required: true,
+                trim: true
+            }
+        }, {
+            description: {
+                type: String,
+                required: true,
+                trim: true
+            }
+        }],
+    reviews: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Review'
+        }]
+});
+
+CourseSchema.method('update', function (updates, callback) {
+    Object.assign(this, updates);
+    this.save(callback);
+});
+
+// Models
+var Review = mongoose.model('Review', ReviewSchema);
+var Course = mongoose.model('Course', CourseSchema);
 var User = mongoose.model('User', UserSchema);
 
+module.exports.Review = Review;
+module.exports.Course = Course;
 module.exports.User = User;
+
+
 // Validators
 
 // TODO user email validator --> move to separate module

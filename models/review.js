@@ -29,25 +29,26 @@ var ReviewSchema = new mongoose.Schema({
 // Validator not allowing users to rate own courses
 ReviewSchema.pre('save', function (next) {
     let review = this;
+    console.log('Review: ' + this);
 
-    this.parent()
-        .select('user reviews')
-        .exec( function (err, course) {
-            console.log(course);
-            if (err) next(err);
-            if (course) {
-                if (review.user.toString() === course.user.toString()) {
-                    let err = new Error("Can not review own course");
-                    err.status = 503;
-                    return next(err);
-                } else {
-                    next();
-                }
-            } else {
-                next();
-            }
-        })
-    //next();
+    //this.parent()
+    //    .select('user reviews')
+    //    .exec( function (err, course) {
+    //        console.log(course);
+    //        if (err) next(err);
+    //        if (course) {
+    //            if (review.user.toString() === course.user.toString()) {
+    //                let err = new Error("Can not review own course");
+    //                err.status = 503;
+    //                return next(err);
+    //            } else {
+    //                next();
+    //            }
+    //        } else {
+    //            next();
+    //        }
+    //    })
+    next();
 });
 
 
@@ -55,4 +56,3 @@ ReviewSchema.pre('save', function (next) {
 var Review = mongoose.model('Review', ReviewSchema);
 
 module.exports.Review = Review;
-module.exports.ReviewSchema = ReviewSchema;

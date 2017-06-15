@@ -2,9 +2,9 @@
 const express = require('express');
 const router = express.Router();
 
-var User = require('../models/user').User;
-var Review = require('../models/review').Review;
-var Course = require('../models/course').Course;
+var User = require('../models/model').User;
+var Review = require('../models/model').Review;
+var Course = require('../models/model').Course;
 
 // Auth middleware
 var mid = require('../middleware/index');

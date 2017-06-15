@@ -14,9 +14,9 @@ var app = express();
 
 // Models
 
-var User = require('../models/user');
-var Review = require('../models/review');
-var Course = require('../models/course');
+//var User = require('../models/model');
+//var Review = require('../models/review');
+//var Course = require('../models/course');
 
 // set our port
 app.set('port', process.env.PORT || 5000);

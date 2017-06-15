@@ -1,6 +1,6 @@
 // Express middleware
 'use strict';
-var User = require('../models/user').User;
+var User = require('../models/model').User;
 var auth = require('basic-auth');
 // => { name: 'something', pass: 'whatever' }
 
