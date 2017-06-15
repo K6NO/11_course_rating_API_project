@@ -6,32 +6,20 @@ var User = require('../models/user').User;
 var Review = require('../models/review').Review;
 var Course = require('../models/course').Course;
 
+// Auth middleware
+var mid = require('../middleware/index');
+
 
 // index
 router.get('/', (req, res, next)=> {
     return res.send('Hello there');
 });
 
-// Middleware
-
-// preload the document in all cases wher
-//router.param('id', function (req, res, next, id) {
-//   Course.findById(id, function (err, course) {
-//      if (err) return next(err);
-//      if(!course){
-//         var err = new Error('Not Found');
-//         err.status(404);
-//         return next(err);
-//      }
-//      req.course = course;
-//      return next();
-//   });
-//});
 
 // API routes
 
 // GET /api/users - get users
-router.get('/api/users', (req, res, next)=> {
+router.get('/api/users', mid.isAuthenticated, (req, res, next)=> {
     User.find({})
         .sort({fullName: 1})
         .exec(function(err, users){
@@ -84,7 +72,7 @@ router.get('/api/courses/:id', (req, res, next)=> {
 });
 
 // POST /api/courses - create course
-router.post('/api/courses', (req, res, next)=> {
+router.post('/api/courses', mid.isAuthenticated ,(req, res, next)=> {
     var course = new Course(req.body);
     course.save(function (err) {
         if (err) {
@@ -98,7 +86,7 @@ router.post('/api/courses', (req, res, next)=> {
 });
 
 // PUT /api/courses/:id - create course
-router.put('/api/courses/:id', (req, res, next)=> {
+router.put('/api/courses/:id', mid.isAuthenticated, (req, res, next)=> {
     Course.findById(req.params.id)
         .exec(function (err, course) {
             if (err) return next(err);
@@ -116,7 +104,7 @@ router.put('/api/courses/:id', (req, res, next)=> {
 });
 
 // POST /api/courses/:id/reviews - create reviews
-router.post('/api/courses/:id/reviews', (req, res, next)=> {
+router.post('/api/courses/:id/reviews', mid.isAuthenticated, (req, res, next)=> {
     Course.findById(req.params.id)
         .exec(function (err, course) {
             if (err) return next(err);

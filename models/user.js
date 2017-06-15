@@ -31,6 +31,37 @@ var UserSchema = new Schema({
     }
 });
 
+UserSchema.pre('save', function (next) {
+    var user = this;
+    bcrypt.hash(user.password, 10, function(err, hash) {
+        if (err) {
+            return next(err);
+        }
+        user.password = hash;
+        next();
+    });
+});
+
+UserSchema.statics.authenticate = function (email, password, callback){
+  User.findOne({emailAddress: email})
+      .exec(function (err, user) {
+          if (err) {
+              return callback(err);
+          } else if (!user) {
+              var noUserErr = new Error('User not found.');
+              noUserErr.status = 401;
+              return callback(noUserErr);
+          }
+          bcrypt.compare(password, user.password, function (err, result) {
+              if(result === true){
+                  return callback(null, user);
+              } else {
+                  return callback();
+              }
+          });
+      });
+};
+
 UserSchema.plugin(uniqueValidator);
 
 //UserSchema.pre('save', function (next) {

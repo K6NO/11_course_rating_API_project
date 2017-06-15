@@ -1,12 +1,14 @@
 'use strict';
 
 // load modules
-var express = require('express');
-var morgan = require('morgan');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
-var seeder = require('mongoose-seeder'),
-    data = require('./data/data.json');
+const express = require('express'),
+    morgan = require('morgan'),
+    mongoose = require('mongoose'),
+    bodyParser = require('body-parser'),
+    seeder = require('mongoose-seeder'),
+    data = require('./data/data.json'),
+    session = require('express-session');
+
 
 var app = express();
 
@@ -23,7 +25,7 @@ app.set('port', process.env.PORT || 5000);
 mongoose.connect("mongodb://localhost:27017/courserating");
 var db = mongoose.connection;
 
-// error / connection logs
+// MongoDB error / connection logs
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', ()=>{
   console.log('Succesfully connected to MongoDB');
@@ -33,6 +35,19 @@ db.once('open', ()=>{
     console.log('Error: ' + err);
   });
 });
+
+// setting up Mongo as session store
+var MongoStore = require('connect-mongo')(session);
+
+// making session available application-wide for auth
+app.use(session({
+  secret: 'courserating',
+  resave: true,
+  saveUninitialized: false,
+  store: new MongoStore({
+    mongooseConnection: db
+  })
+}));
 
 // morgan gives us http request logging
 app.use(morgan('dev'));
