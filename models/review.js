@@ -26,9 +26,9 @@ var ReviewSchema = new Schema({
 });
 
  //Validator not allowing users to rate own courses
-ReviewSchema.method('checkUser', function (callback) {
-    console.log(this.parent());
-});
+//ReviewSchema.method('checkUser', function (callback) {
+//    this.parent().save(callback);
+//});
 
 
 // Model

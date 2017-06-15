@@ -2,7 +2,9 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var Schema = mongoose.Schema;
-var ReviewSchema = require('./review').ReviewSchema;
+//var ReviewSchema = require('./review').ReviewSchema;
+var uniqueValidator = require('mongoose-unique-validator');
+
 
 
 var CourseSchema = new mongoose.Schema({
@@ -47,9 +49,12 @@ var CourseSchema = new mongoose.Schema({
     reviews: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Review'
+            ref: 'Review',
+            unique: true
         }]
 });
+
+CourseSchema.plugin(uniqueValidator);
 
 CourseSchema.method('update', function (updates, callback) {
     Object.assign(this, updates);

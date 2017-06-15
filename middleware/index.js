@@ -9,6 +9,7 @@ var auth = require('basic-auth');
 function isAuthenticated (req, res, next) {
     var isUserAuth = auth(req);
     if (isUserAuth) {
+        console.log(isUserAuth.name + ' ' + isUserAuth.pass);
         User.authenticate(isUserAuth.name, isUserAuth.pass, function (err, user) {
             if(err){
                 let authErr = new Error('Error when authenticating user.');

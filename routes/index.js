@@ -111,8 +111,14 @@ router.post('/api/courses/:id/reviews', mid.isAuthenticated, (req, res, next)=> 
             if (err) return next(err);
             if(!course) return next(err);
 
+            let courseUserId = course.user;
+            let signedInUserId = req.session.userId;
+            if(courseUserId.toString() == signedInUserId.toString()) {
+                let sameUserErr = new Error('Cannot review own course')
+                sameUserErr.status = 401;
+                return next(sameUserErr);
+            }
             let review = new Review(req.body);
-            //review.checkUser(function(err) {
                 if (err) return next(err);
                 review.save(function (err, review) {
                     if (err) return next(err);
@@ -124,7 +130,6 @@ router.post('/api/courses/:id/reviews', mid.isAuthenticated, (req, res, next)=> 
                         res.json({});
                     });
                 });
-            //})
         });
 });
 
