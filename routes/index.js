@@ -111,15 +111,18 @@ router.post('/api/courses/:id/reviews', mid.isAuthenticated, (req, res, next)=> 
             if(!course) return next(err);
 
             let review = new Review(req.body);
-            review.save(function (err, review) {
+            review.checkUser(function (err) {
                 if (err) return next(err);
-                course.reviews.push(review);
-                course.save(function (err) {
+                review.save(function (err, review) {
                     if (err) return next(err);
-                    res.status(201); // indicate to the client that the doc saved successfully
-                    res.header('Location', '/');
-                    res.json({});
-                })
+                    course.reviews.push(review);
+                    course.save(function (err) {
+                        if (err) return next(err);
+                        res.status(201); // indicate to the client that the doc saved successfully
+                        res.header('Location', '/');
+                        res.json({});
+                    })
+                });
             });
         })
 });

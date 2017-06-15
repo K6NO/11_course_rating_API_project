@@ -66,7 +66,7 @@ UserSchema.plugin(uniqueValidator);
 
 
 
-var ReviewSchema = new mongoose.Schema({
+var ReviewSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User'
@@ -87,10 +87,11 @@ var ReviewSchema = new mongoose.Schema({
 });
 
 // Validator not allowing users to rate own courses
-ReviewSchema.pre('save', function (next) {
+ReviewSchema.method('checkUser', function (callback) {
     console.log('Review: ' + this);
+    this.parent().save(callback);
 
-    //this.parent()
+    //console.log(this.parent());
     //    .select('user reviews')
     //    .exec( function (err, course) {
     //        console.log(course);
@@ -107,13 +108,13 @@ ReviewSchema.pre('save', function (next) {
     //            next();
     //        }
     //    })
-    next();
+    //return next();
 });
 
 
 
 
-var CourseSchema = new mongoose.Schema({
+var CourseSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: "User",
@@ -152,11 +153,7 @@ var CourseSchema = new mongoose.Schema({
                 trim: true
             }
         }],
-    reviews: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Review'
-        }]
+    reviews: [ReviewSchema]
 });
 
 CourseSchema.method('update', function (updates, callback) {
