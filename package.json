@@ -5,11 +5,14 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node ./src/index.js localhost 5000",
-    "devstart": "nodemon ./src/index.js localhost 5000"
+    "devstart": "nodemon ./src/index.js localhost 5000",
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "chai": "^4.0.2",
+    "mocha": "^3.4.2",
     "mongoose-seeder": "^1.2.1",
     "nodemon": "^1.9.1"
   },

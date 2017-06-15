@@ -20,11 +20,12 @@ router.get('/', (req, res, next)=> {
 
 // GET /api/users - get users
 router.get('/api/users', mid.isAuthenticated, (req, res, next)=> {
-    User.find({})
-        .sort({fullName: 1})
-        .exec(function(err, users){
+    console.log(req.session.userId);
+    User.findOne({_id: req.session.userId})
+        .exec(function(err, user){
+            console.log(user);
             if (err) return next(err);
-            return res.json(users);
+            return res.json(user);
         })
 });
 
