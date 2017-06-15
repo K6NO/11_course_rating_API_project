@@ -5,8 +5,6 @@ var auth = require('basic-auth');
 // => { name: 'something', pass: 'whatever' }
 
 // User authentication
-
-
 // Parse Authorization header
 function isAuthenticated (req, res, next) {
     var isUserAuth = auth(req);

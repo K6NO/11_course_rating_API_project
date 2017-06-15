@@ -47,7 +47,7 @@ var CourseSchema = new mongoose.Schema({
     reviews: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'ReviewSchema'
+            ref: 'Review'
         }]
 });
 
@@ -57,6 +57,5 @@ CourseSchema.method('update', function (updates, callback) {
 });
 
 var Course = mongoose.model('Course', CourseSchema);
-module.exports.Course = Course;
-module.exports.CourseSchema = CourseSchema;
 
+module.exports.Course = Course;
