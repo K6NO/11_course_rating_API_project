@@ -2,6 +2,7 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var Schema = mongoose.Schema;
+var ReviewSchema = require('./review').ReviewSchema;
 
 
 var CourseSchema = new mongoose.Schema({
@@ -46,9 +47,8 @@ var CourseSchema = new mongoose.Schema({
     reviews: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'Review'
-        }
-    ] // (Array of ObjectId values, _id values from the reviews collection)
+            ref: 'ReviewSchema'
+        }]
 });
 
 CourseSchema.method('update', function (updates, callback) {
@@ -56,10 +56,7 @@ CourseSchema.method('update', function (updates, callback) {
     this.save(callback);
 });
 
-CourseSchema.pre('save', function (next) {
-    // validation?
-    next();
-});
-
 var Course = mongoose.model('Course', CourseSchema);
 module.exports.Course = Course;
+module.exports.CourseSchema = CourseSchema;
+

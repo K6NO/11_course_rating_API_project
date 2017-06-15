@@ -1,7 +1,9 @@
 'use strict';
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose'),
+    bcrypt = require('bcrypt'),
+    Schema = mongoose.Schema;
+
+var Course = require("./course");
 
 
 var ReviewSchema = new mongoose.Schema({
@@ -24,29 +26,33 @@ var ReviewSchema = new mongoose.Schema({
     }
 });
 
-// pre-save validation not allowing users to rate own courses
-ReviewSchema.pre("save", function (next) {
-    //review = this;
-    //Course.findOne({ reviews: review._id})
-    //    .select('user reviews')
-    //    .exec( function (err, course) {
-    //        if (err) next(err)
-    //        if (course) {
-    //            if (review.user.toString() === course.user.toString()) {
-    //                let err = new Error("Can not review own course")
-    //                err.status = 503;
-    //                return next(err);
-    //            } else {
-    //                next();
-    //            }
-    //        } else {
-    //            next();
-    //        }
-    //    })
-    next();
+// Validator not allowing users to rate own courses
+ReviewSchema.pre('save', function (next) {
+    let review = this;
+
+    this.parent()
+        .select('user reviews')
+        .exec( function (err, course) {
+            console.log(course);
+            if (err) next(err);
+            if (course) {
+                if (review.user.toString() === course.user.toString()) {
+                    let err = new Error("Can not review own course");
+                    err.status = 503;
+                    return next(err);
+                } else {
+                    next();
+                }
+            } else {
+                next();
+            }
+        })
+    //next();
 });
+
 
 // Model
 var Review = mongoose.model('Review', ReviewSchema);
 
 module.exports.Review = Review;
+module.exports.ReviewSchema = ReviewSchema;

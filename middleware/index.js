@@ -13,7 +13,6 @@ function isAuthenticated (req, res, next) {
     if (isUserAuth) {
         User.authenticate(isUserAuth.name, isUserAuth.pass, function (err, user) {
             if(err){
-                console.log(err);
                 let authErr = new Error('Error when authenticating user.');
                 authErr.status = 401;
                 return next(authErr);
@@ -22,7 +21,6 @@ function isAuthenticated (req, res, next) {
                 authErr.status = 401;
                 return next(authErr);
             } else {
-                console.log('name: ' + isUserAuth.name + ' pass: ' + isUserAuth.pass);
                 req.session.userId = user._id;
             }
             return next();
