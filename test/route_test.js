@@ -2,70 +2,87 @@
 process.env.NODE_ENV = 'test';
 
 let mongoose = require("mongoose");
-let User = require('../models/user').User;
 
 //Require the dev-dependencies
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 let server = require('../src/index');
 let should = chai.should();
+let seeder = require('mongoose-seeder');
+let data = require('../src/data/data.json');
+
+
 var expect = require('chai').expect;
 
-// Test suite (closely related unit tests)
-// When I make a request to the GET route with the correct credentials, the corresponding user document is returned
 
 chai.use(chaiHttp);
-//Our parent block
-describe('User', () => {
-    beforeEach((done) => { //Before each test we empty the database
-        User.remove({}, (err) => {
-            done();
-        });
-    });
-});
 
+// Mocha self-test
 describe('Mocha', function () {
     // Test spec (unit tests)
     it('should run the test with npm', function () {
         expect(true).to.be.ok; // -> ok truthy value
     });
 });
+
+// When I make a request to the GET route with the correct credentials, the corresponding user document is returned
 describe('/ GET /users', function () {
-    //it('should have a session id', function () {
-    //
-    //});
-    //
-    //it('should throw an error with wrong session id', function () {
-    //
-    //});
-    //
-    it('should return 200 - authenticated', function (done) {
+    before((done) => {
+        console.log("before");
+        mongoose.connection.db.dropDatabase(function (err) {
+            if(err) return next(err);
+            console.log('DB deleted');
+            done();
+        });
+    });
+
+    // joe@smith.com:password -> am9lQHNtaXRoLmNvbTpwYXNzd29yZA==
+    it('should respond with the authenticated user', function () {
         chai.request(server)
             .get('/api/users')
-            .auth('joe@smith.com', 'password')
-            //.set('Authorization', 'Basic am9lQHNtaXRoLmNvbTpwYXNzd29yZA==')
+            .set('Authorization', 'Basic am9lQHNtaXRoLmNvbTpwYXNzd29yZA==')
             .end(function (err, res) {
-                res.should.have.status(200);
+                expect(
+                    { _id: "57029ed4795118be119cc437",
+                        fullName: 'Joe Smith',
+                        emailAddress: 'joe@smith.com',
+                        password: '$2a$10$nwVKZmtZhgE9k/wu9BdHJOIE6lXhpxKh1sK0RvmO1hl8DkhZ0.wGi',
+                        __v: 0 }
+                ).to.equal(res.body);
                 done();
-            })
+            });
     });
 
     it('should return 401 - unauthenticated', function (done) {
         chai.request(server)
             .get('/api/users')
             .end(function (err, res) {
-                res.should.have.status(401);
+                //expect(401).to.equal(res.status);
+                res.should.have.status(401)
                 done();
             })
     });
 });
 
-//router.get('/api/users', mid.isAuthenticated, (req, res, next)=> {
-//    console.log(req.session.userId);
-//    User.findOne({_id: req.session.userId})
-//        .exec(function(err, user){
-//            console.log(user);
-//            if (err) return next(err);
-//            return res.json(user);
-//        })
-//});
+
+//When I make a request to the GET /api/courses/:courseId route with the invalid credentials, a 401 status error is returned
+describe('/ GET /api/courses/:courseId', function () {
+    before((done) => {
+        console.log("before");
+        mongoose.connection.db.dropDatabase(function (err) {
+            if (err) return next(err);
+            console.log('DB deleted');
+            done();
+        });
+    });
+
+    it('should respond with 401 status error', function () {
+        chai.request(server)
+            .get('/api/courses/57029ed4795118be119cc43d')
+            .set('Authorization', 'Basic xxxxxxxxxxxxxxxxxxx')
+            .end(function (err, res) {
+                res.should.have.status(401);
+                done();
+            });
+    });
+});

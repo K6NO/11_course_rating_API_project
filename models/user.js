@@ -64,54 +64,8 @@ UserSchema.statics.authenticate = function (email, password, callback){
 
 UserSchema.plugin(uniqueValidator);
 
-//UserSchema.pre('save', function (next) {
-//    var user = this;
-//    var isValidEmail = validator.isEmail(user.emailAddress);
-//    if(!isValidEmail) {
-//        let error = new Error('The email you provided is not a valid.');
-//        error.status = 401;
-//        return next(error);
-//    }
-//    next();
-//});
-
 // Model
 var User = mongoose.model('User', UserSchema);
 
 module.exports.User = User;
-// Validators
-
-// TODO user email validator --> move to separate module
-//var badUser = new User({
-//    emailAddress: undefined,
-//    fullName: 'Tamas Kenessey',
-//    password: 12345
-//});
-//
-//var error = badUser.validateSync();
-//assert.equal(error.errors['email'].message,
-//    'Provide an email address.');
-//
-//badUser.emailAddress = 'ttttttt';
-//
-//error = badUser.validateSync();
-//assert.equal(error.errors['email'].message,
-//    'ttttttt is not a valid email address');
-//
-//badUser.emailAddress = 'tktk@gmail';
-//
-//error = badUser.validateSync();
-//assert.equal(error.errors['email'].message,
-//    'tktk@gmail is not a valid email address');
-//
-//badUser.emailAddress = 'tktk@gmail.com.';
-//
-//error = badUser.validateSync();
-//assert.equal(error.errors['email'].message,
-//    'tktk@gmail.com. is not a valid email address');
-//
-//badUser.emailAddress = 'tktk@gmail.com';
-//// Validation succeeds! Email is defined and fulfills regex criteria
-//error = user.validateSync();
-//assert.equal(error, null);
 

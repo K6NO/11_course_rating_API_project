@@ -9,7 +9,6 @@ var Course = require('../models/course').Course;
 // Auth middleware
 var mid = require('../middleware/index');
 
-
 // index
 router.get('/', (req, res, next)=> {
     return res.send('Hello there');
@@ -17,7 +16,6 @@ router.get('/', (req, res, next)=> {
 
 
 // API routes
-
 // GET /api/users - get users
 router.get('/api/users', mid.isAuthenticated, (req, res, next)=> {
     console.log(req.session.userId);
@@ -57,10 +55,18 @@ router.get('/api/courses', (req, res, next)=> {
 
 
 // GET /api/course/:id - get single course
+// Uses deep population to return fullName of users posting reviews
 router.get('/api/courses/:id', (req, res, next)=> {
     Course.findById(req.params.id)
         .populate('user', 'fullName')
-        .populate('reviews')
+        .populate({
+            path: 'reviews',
+            populate: {
+                path: 'user',
+                model: 'User',
+                select: 'fullName'
+            }
+        })
         .exec(function (err, course) {
             if (err) return next(err);
             if(!course){
@@ -86,7 +92,7 @@ router.post('/api/courses', mid.isAuthenticated ,(req, res, next)=> {
     })
 });
 
-// PUT /api/courses/:id - create course
+// PUT /api/courses/:id - update course
 router.put('/api/courses/:id', mid.isAuthenticated, (req, res, next)=> {
     Course.findById(req.params.id)
         .exec(function (err, course) {
@@ -111,13 +117,15 @@ router.post('/api/courses/:id/reviews', mid.isAuthenticated, (req, res, next)=> 
             if (err) return next(err);
             if(!course) return next(err);
 
+            // CHECK/VALIDATE if user rates his own course
             let courseUserId = course.user;
             let signedInUserId = req.session.userId;
             if(courseUserId.toString() == signedInUserId.toString()) {
-                let sameUserErr = new Error('Cannot review own course')
+                let sameUserErr = new Error('Cannot review own course');
                 sameUserErr.status = 401;
                 return next(sameUserErr);
             }
+
             let review = new Review(req.body);
                 if (err) return next(err);
                 review.save(function (err, review) {
@@ -125,13 +133,12 @@ router.post('/api/courses/:id/reviews', mid.isAuthenticated, (req, res, next)=> 
                     course.reviews.push(review);
                     course.save(function (err) {
                         if (err) return next(err);
-                        res.status(201); // indicate to the client that the doc saved successfully
+                        res.status(201); // doc saved successfully
                         res.header('Location', '/');
                         res.json({});
                     });
                 });
         });
 });
-
 
 module.exports = router;

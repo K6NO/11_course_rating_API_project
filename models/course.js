@@ -2,10 +2,7 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var Schema = mongoose.Schema;
-//var ReviewSchema = require('./review').ReviewSchema;
 var uniqueValidator = require('mongoose-unique-validator');
-
-
 
 var CourseSchema = new mongoose.Schema({
     user: {

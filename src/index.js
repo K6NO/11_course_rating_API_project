@@ -12,12 +12,6 @@ const express = require('express'),
 
 var app = express();
 
-// Models
-
-var User = require('../models/user');
-var Review = require('../models/review');
-var Course = require('../models/course');
-
 // set our port
 app.set('port', process.env.PORT || 5000);
 

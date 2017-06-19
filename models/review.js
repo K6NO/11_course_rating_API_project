@@ -2,7 +2,6 @@
 const mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
     Schema = mongoose.Schema;
-var Course = require("./course").Course;
 
 
 var ReviewSchema = new Schema({
@@ -25,11 +24,7 @@ var ReviewSchema = new Schema({
     }
 });
 
- //Validator not allowing users to rate own courses
-//ReviewSchema.method('checkUser', function (callback) {
-//    this.parent().save(callback);
-//});
-
+// Validation is done at the route: // POST /api/courses/:id/reviews
 
 // Model
 var Review = mongoose.model('Review', ReviewSchema);
