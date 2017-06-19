@@ -5,9 +5,14 @@ In this project, you’ll create a REST API using Express. The API will provide 
 To complete this project, you’ll use your knowledge of REST API design, Node.js, and Express to create API routes, along with Mongoose and MongoDB for data modeling, validation, and persistence.
 
 Prerequisites:
-How to Install MongoDB on a Mac - http://treehouse.github.io/installation-guides/mac/mongo-mac.html
-How to Install MongoDB on Windows - http://treehouse.github.io/installation-guides/windows/mongo-windows.html
-Postman for testing routes: https://www.getpostman.com/ - import CourseAPI.postman_collection.json
+- How to Install MongoDB on a Mac - http://treehouse.github.io/installation-guides/mac/mongo-mac.html
+- How to Install MongoDB on Windows - http://treehouse.github.io/installation-guides/windows/mongo-windows.html
+- Postman for testing routes: https://www.getpostman.com/ - import CourseAPI.postman_collection.json
+
+# Install & run
+- Run npm install
+- Run nodemon OR npm run devstart for dev mode OR
+- Run npm start
 
 # Project Instructions
 
