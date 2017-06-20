@@ -247,11 +247,6 @@
 						"description": ""
 					},
 					{
-						"key" : "Authorization",
-						"value" : "Basic am9obkBzbWl0aC5jb206cGFzc3dvcmQ=",
-						"description" : ""
-					},
-					{
 						"key": "Content-Type",
 						"value": "application/json",
 						"description": ""
