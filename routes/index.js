@@ -14,7 +14,6 @@ router.get('/', (req, res, next)=> {
     return res.send('Hello there');
 });
 
-
 // API routes
 // GET /api/users - get users
 router.get('/api/users', mid.isAuthenticated, (req, res, next)=> {
